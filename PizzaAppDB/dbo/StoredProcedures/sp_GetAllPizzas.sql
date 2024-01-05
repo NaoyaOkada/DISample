@@ -1,0 +1,7 @@
+﻿CREATE PROCEDURE [dbo].[sp_GetAllPizzas]
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT * FROM dbo.Pizzas;
+END;

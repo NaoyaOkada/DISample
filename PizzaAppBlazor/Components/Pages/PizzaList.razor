@@ -1,0 +1,46 @@
+﻿@page "/"
+
+@using PizzaAppDBAccessLib.Data;
+@using PizzaAppDBAccessLib.Models
+
+@inject IDataService ds;
+
+<h3>Pizza</h3>
+
+@if (null == pizzas)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ピザ</th>
+                <th>値段</th>
+                <th>購入</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pizza in pizzas)
+            {
+                <tr>
+                    <td>@pizza.ProductName</td>
+                    <td>$ @pizza.Price</td>
+                    <td>
+                        <a href="/purchase/@pizza.Id" class="btn btn-primary">購入</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Pizza>? pizzas;
+
+    protected override void OnInitialized()
+    {
+        pizzas = ds.GetAllPizzas();
+    }
+}

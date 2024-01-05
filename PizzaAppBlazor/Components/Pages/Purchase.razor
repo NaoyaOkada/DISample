@@ -1,0 +1,79 @@
+﻿@page "/purchase/{PizzaId}"
+@rendermode InteractiveServer
+
+
+@using PizzaAppDBAccessLib.Data;
+@using PizzaAppDBAccessLib.Models
+@inject IDataService DS;
+@inject NavigationManager NavigationManager
+<h3>ピザ購入</h3>
+
+@if (null == Pizza)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <h2>@Pizza.ProductName</h2>
+        <p>価格: ¥@Pizza.Price</p>
+    </div>
+
+    <EditForm Model="@formData" OnSubmit="@HandleValidSubmit" FormName="Order">
+        <div>
+            <label for="firstName">First Name:</label>
+            <InputText @bind-Value="formData.FirstName" />
+        </div>
+        <div>
+            <label for="lastName">Last Name:</label>
+            <InputText @bind-Value="formData.LastName" />
+        </div>
+        <div>
+            <label for="count">Count:</label>
+            <InputNumber @bind-Value="formData.Count" />
+        </div>
+        <button type="submit">Submit</button>
+    </EditForm>
+}
+
+@code {
+    private int currentCount = 0;
+
+    [Parameter]
+    public string? PizzaId { get; set; }
+
+    private Pizza? Pizza;
+
+    [SupplyParameterFromForm]
+    public FormModel formData { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        if (int.TryParse(PizzaId, out var id))
+        {
+            Pizza = DS.GetPizzaById(id);
+        }
+    }
+
+    private void HandleValidSubmit()
+    {
+        int pizzaId = Pizza?.Id ?? 0;
+        if (null == formData.FirstName || null == formData.LastName || 0 >= formData.Count || 0 == pizzaId) return;
+        FullOrder fullOrder = new FullOrder
+        {
+            FirstName = formData.FirstName,
+            LastName = formData.LastName,
+            PizzaId = pizzaId,
+            Count = formData.Count,
+        };
+        DS.OrderPizza(fullOrder);
+        NavigationManager.NavigateTo("/");
+    }
+
+    public class FormModel
+    {
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public int Count { get; set; }
+    }
+}
