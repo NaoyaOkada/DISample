@@ -1,5 +1,6 @@
 using PizzaAppBlazor.Components;
 using PizzaAppDBAccessLib.Data;
+using PizzaAppDBAccessLib.DataServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,21 @@ builder.Services.AddRazorComponents()
 .AddInteractiveServerComponents();
 
 builder.Services.AddTransient<ISQLDataBase, SQLDataBase>();
-builder.Services.AddTransient<IDataService, SqlDataService>();
+builder.Services.AddTransient<ISqliteDataBase, SqliteDataBase>();
+
+string? dbChoice = builder.Configuration["DBChoice"];
+if ("mssql" == dbChoice)
+{
+    builder.Services.AddTransient<IDataService, SqlDataService>();
+}
+else if ("sqlite" == dbChoice)
+{
+    builder.Services.AddTransient<IDataService, SqliteDataService>();
+}
+else
+{
+    builder.Services.AddTransient<IDataService, SqlDataService>();
+}
 
 var app = builder.Build();
 

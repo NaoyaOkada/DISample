@@ -67,14 +67,9 @@ namespace PizzaAppDBAccessLib.Data
         void Save<T>(string sql, T param, bool isStoredProcedure = false);
     }
 
-    public class SQLDataBase : ISQLDataBase
+    public class SQLDataBase(IConfiguration configuration) : ISQLDataBase
     {
-        private readonly string? _connectionString;
-
-        public SQLDataBase(IConfiguration configuration)
-        {
-            _connectionString = configuration.GetConnectionString("MsSql");
-        }
+        private readonly string? _connectionString = configuration.GetConnectionString("MsSql");
 
         private IDbConnection CreateConnection => new SqlConnection(_connectionString);
 
