@@ -1,6 +1,6 @@
 ﻿using PizzaAppDBAccessLib.Models;
 
-namespace PizzaAppDBAccessLib.Data
+namespace PizzaAppDBAccessLib.DataServices
 {
     public interface IDataService
     {
@@ -9,5 +9,8 @@ namespace PizzaAppDBAccessLib.Data
         Pizza? GetPizzaById(int id);
 
         void OrderPizza(FullOrder fullOrder);
+        List<FullOrder> GetAllOrdersToDeliver();
+
+        void DeliveryDone(int orderId);
     }
 }

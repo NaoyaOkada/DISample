@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
-using PizzaAppDBAccessLib.Data;
 using PizzaAppDBAccessLib.Models;
 using System.Data.SQLite;
 
@@ -13,6 +12,23 @@ namespace PizzaAppDBAccessLib.DataServices
         public SqliteDataService(ISqliteDataBase db)
         {
             _db = db;
+        }
+
+        public void DeliveryDone(int orderId)
+        {
+            string sql = @"update orders set isDone = 1 where Id = @id";
+            dynamic param = new { id = orderId };
+            _db.Save<dynamic>(sql, param);
+        }
+
+        public List<FullOrder> GetAllOrdersToDeliver()
+        {
+            string sql = @"select o.id, o.PizzaId, o.Cnt Count, u.FirstName, u.LastName
+                           from dbo.Orders o
+                           inner join dbo.Users u on o.UserId = u.Id
+                           where o.isDone = @isDone";
+            dynamic param = new { isDone = 0 };
+            return _db.Load<FullOrder, dynamic>(sql, param);
         }
 
         public List<Pizza> GetAllPizzas()
